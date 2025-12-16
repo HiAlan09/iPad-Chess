@@ -50,10 +50,15 @@
 
         /* --- 五子棋棋盘 (交叉点逻辑重构) --- */
         .gobang-board {
-            /* 增大尺寸：使用 98% 的短边长度，最大限制放宽 */
-            width: 96vmin;
-            height: 96vmin;
-            /* iPad Pro 竖屏宽度较大，限制一下最大物理尺寸以免过于夸张，但比之前大 */
+            /* 自适应核心优化：
+               1. 基础大小尝试使用 96vmin (视口短边)。
+               2. 同时限制高度不超过 (屏幕高度 - 180px)，预留 UI 空间。
+               3. 这样竖屏时取宽度，横屏时取(高度-UI)，完美适配。
+            */
+            width: min(96vmin, calc(100vh - 180px));
+            height: min(96vmin, calc(100vh - 180px));
+            
+            /* 物理最大限制 */
             max-width: 900px; 
             max-height: 900px;
             
@@ -129,10 +134,13 @@
 
         /* --- 国际象棋棋盘 --- */
         .chess-board {
-            width: 96vmin;
-            height: 96vmin;
+            /* 同样应用自适应逻辑 */
+            width: min(96vmin, calc(100vh - 180px));
+            height: min(96vmin, calc(100vh - 180px));
+            
             max-width: 900px;
             max-height: 900px;
+            
             display: grid;
             grid-template-columns: repeat(8, 1fr);
             grid-template-rows: repeat(8, 1fr);
@@ -193,7 +201,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: clamp(2rem, 8vmin, 4.5rem); /* 动态字体大小 */
+            font-size: clamp(1.5rem, 8vmin, 4.5rem); /* 调整字体大小自适应 */
             cursor: pointer;
             z-index: 20;
             filter: drop-shadow(0px 4px 2px rgba(0,0,0,0.3));
