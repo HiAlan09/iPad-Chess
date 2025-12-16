@@ -953,10 +953,17 @@
             selectedSquare = null;
             refreshChessUI();
             if(!hasKing(state.board, state.currentPlayer === 1 ? 2 : 1)) { showWinner(state.currentPlayer); return; }
+            
             state.currentPlayer = state.currentPlayer === 1 ? 2 : 1;
+            
+            // Critical Fix: Reset AI thinking flag when turn passes to Human
+            if (state.currentPlayer === 1) state.aiThinking = false;
+
             updateTurnIndicator();
             if(state.mode === 'pve' && state.currentPlayer === 2) {
-                state.aiThinking = true; updateTurnIndicator(); setTimeout(aiChessMove, 500);
+                state.aiThinking = true; 
+                updateTurnIndicator(); 
+                setTimeout(aiChessMove, 500);
             }
         }
 
@@ -1016,8 +1023,17 @@
             
             // Auto promote for AI
             const isPromo = Math.abs(state.board[bestMove.fy][bestMove.fx]) === 1 && bestMove.ty === 7;
-            executeChessMove(bestMove.fx, bestMove.fy, bestMove.tx, bestMove.ty);
-            if(isPromo) state.board[bestMove.ty][bestMove.tx] = -5; // Always Queen
+            
+            // Fix: Update state for promotion BEFORE UI refresh in finishChessTurn
+            if(isPromo) {
+                // We modify the piece at source to be a queen (-5) temporarily so when execute moves it, it moves a queen
+                // But safer to just execute move then force update
+                executeChessMove(bestMove.fx, bestMove.fy, bestMove.tx, bestMove.ty);
+                state.board[bestMove.ty][bestMove.tx] = -5; // Force to Queen
+                refreshChessUI(); // Re-render immediately
+            } else {
+                executeChessMove(bestMove.fx, bestMove.fy, bestMove.tx, bestMove.ty);
+            }
         }
         function isSquareUnderAttack(tx, ty, attacker, board) {
             for(let y=0; y<8; y++) for(let x=0; x<8; x++) {
