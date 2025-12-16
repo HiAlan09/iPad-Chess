@@ -48,180 +48,185 @@
         }
         .btn-game:active { transform: scale(0.95); }
 
-        /* --- 五子棋棋盘 (交叉点逻辑重构) --- */
+        /* --- 五子棋样式 --- */
         .gobang-board {
-            /* 自适应核心优化：
-               1. 基础大小尝试使用 96vmin (视口短边)。
-               2. 同时限制高度不超过 (屏幕高度 - 180px)，预留 UI 空间。
-               3. 这样竖屏时取宽度，横屏时取(高度-UI)，完美适配。
-            */
-            width: min(96vmin, calc(100vh - 180px));
-            height: min(96vmin, calc(100vh - 180px));
-            
-            /* 物理最大限制 */
+            width: min(96vmin, calc(100vh - 200px));
+            height: min(96vmin, calc(100vh - 200px));
             max-width: 900px; 
             max-height: 900px;
-            
             background-color: #e6b87d;
-            box-shadow: 
-                0 25px 50px -12px rgba(0, 0, 0, 0.5),
-                inset 0 0 60px rgba(66, 33, 10, 0.2);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5), inset 0 0 60px rgba(66, 33, 10, 0.2);
             border-radius: 4px;
-            /* 外边框 */
             border: 6px solid #6b4423; 
-            
             position: relative;
-            /* Padding 减少，让格子撑满 */
             padding: 4px; 
-            
             display: grid;
             grid-template-columns: repeat(15, 1fr);
             grid-template-rows: repeat(15, 1fr);
         }
 
-        /* 核心逻辑：每个 .gobang-cell 代表一个交叉点区域。
-           利用背景渐变在每个格子的正中心画十字线。
-        */
         .gobang-cell {
             position: relative;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            /* 绘制十字线 */
             background-image: 
                 linear-gradient(to right, transparent calc(50% - 1px), #5c3a1e calc(50% - 1px), #5c3a1e calc(50% + 1px), transparent calc(50% + 1px)),
                 linear-gradient(to bottom, transparent calc(50% - 1px), #5c3a1e calc(50% - 1px), #5c3a1e calc(50% + 1px), transparent calc(50% + 1px));
         }
 
-        /* 五子棋子 - 确保完全覆盖交叉点中心 */
-        .gobang-piece {
-            width: 92%;
-            height: 92%;
+        .gobang-star-point {
+            position: absolute;
+            width: 16%; height: 16%;
+            background-color: #5c3a1e;
             border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem; /* 稍微调大 Emoji */
-            position: relative;
-            z-index: 20; 
-            box-shadow: 3px 5px 8px rgba(0,0,0,0.4);
+            z-index: 5;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.2);
+        }
+
+        .gobang-piece {
+            width: 92%; height: 92%;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.5rem;
+            position: relative; z-index: 20; 
+            box-shadow: 2px 4px 6px rgba(0,0,0,0.5), inset 2px 2px 5px rgba(255,255,255,0.3), inset -2px -2px 5px rgba(0,0,0,0.3);
             transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
         }
-        .piece-white {
-            background: radial-gradient(circle at 30% 30%, #ffffff, #cbd5e1);
-            color: #333;
-        }
-        .piece-black {
-            background: radial-gradient(circle at 30% 30%, #475569, #0f172a);
-            color: #fff;
-            border: 1px solid rgba(255,255,255,0.15);
-        }
-
-        /* 最后一个落子标记 */
+        .gb-white { background: radial-gradient(circle at 35% 35%, #fff, #cbd5e1); color: #333; }
+        .gb-black { background: radial-gradient(circle at 35% 35%, #475569, #0f172a); color: #fff; }
+        .gb-orange { background: radial-gradient(circle at 35% 35%, #fb923c, #c2410c); color: #fff; text-shadow: 0 2px 2px rgba(0,0,0,0.3); }
+        
         .last-move-marker::after {
-            content: '';
-            position: absolute;
-            width: 30%;
-            height: 30%;
-            background: rgba(255, 0, 0, 0.6);
+            content: ''; position: absolute;
+            width: 30%; height: 30%;
+            background: rgba(239, 68, 68, 0.8);
             border-radius: 50%;
-            top: 50%;
-            left: 50%;
+            top: 50%; left: 50%;
             transform: translate(-50%, -50%);
-            box-shadow: 0 0 4px rgba(255,0,0,0.8);
+            box-shadow: 0 0 6px rgba(239, 68, 68, 0.6);
         }
 
-        /* --- 国际象棋棋盘 --- */
+        /* --- 国际象棋样式 --- */
         .chess-board {
-            /* 同样应用自适应逻辑 */
-            width: min(96vmin, calc(100vh - 180px));
-            height: min(96vmin, calc(100vh - 180px));
-            
-            max-width: 900px;
-            max-height: 900px;
-            
+            width: min(96vmin, calc(100vh - 200px));
+            height: min(96vmin, calc(100vh - 200px));
+            max-width: 900px; max-height: 900px;
             display: grid;
             grid-template-columns: repeat(8, 1fr);
             grid-template-rows: repeat(8, 1fr);
             border: 6px solid #334155;
-            border-radius: 4px;
+            border-radius: 6px;
             box-shadow: 0 25px 60px -12px rgba(0, 0, 0, 0.7);
         }
-        .chess-square {
-            position: relative; /* 为了定位提示点 */
-        }
-        .chess-square.white { background-color: #e2e8f0; color: #1e293b; }
-        .chess-square.black { background-color: #64748b; color: #f1f5f9; }
-        
-        .chess-square.selected {
-            background-color: rgba(244, 63, 94, 0.7) !important;
-        }
-        .chess-square.last-move {
-            background-color: rgba(250, 204, 21, 0.5) !important;
-        }
-
-        /* 提示点样式 */
-        .hint-dot {
-            position: absolute;
-            width: 25%;
-            height: 25%;
-            background-color: rgba(34, 197, 94, 0.7); /* Green */
-            border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 15;
-            pointer-events: none; /* 让点击穿透到格子 */
-            animation: pulseHint 1.5s infinite;
-        }
-        /* 吃子提示 (圆圈) */
-        .hint-capture {
-            position: absolute;
-            width: 80%;
-            height: 80%;
-            border: 4px solid rgba(239, 68, 68, 0.6); /* Red ring */
-            border-radius: 50%;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 15;
-            pointer-events: none;
-        }
-
-        @keyframes pulseHint {
-            0% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.7; }
-            50% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
-            100% { transform: translate(-50%, -50%) scale(0.9); opacity: 0.7; }
-        }
-
-        .chess-piece {
+        .chess-square { 
+            position: relative; 
+            /* 锁定网格大小，防止被大尺寸 Emoji 撑开 */
             width: 100%;
             height: 100%;
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: clamp(1.5rem, 8vmin, 4.5rem); /* 调整字体大小自适应 */
-            cursor: pointer;
-            z-index: 20;
-            filter: drop-shadow(0px 4px 2px rgba(0,0,0,0.3));
-            transition: transform 0.2s;
         }
-        .chess-piece.white-side { color: #f8fafc; text-shadow: 0 2px 0 #94a3b8; }
-        .chess-piece.black-side { color: #1e293b; text-shadow: 0 2px 0 #000; }
-        .chess-piece:active { transform: scale(1.15); }
+        .chess-square.white { background-color: #e2e8f0; }
+        .chess-square.black { background-color: #64748b; }
+        
+        .chess-square.selected { background-color: rgba(244, 63, 94, 0.6) !important; }
+        
+        /* 移动轨迹优化：3秒后自动消失 */
+        @keyframes blink-fade-out {
+            0% { box-shadow: inset 0 0 0 4px rgba(239, 68, 68, 0.4); background-color: rgba(239, 68, 68, 0.1); }
+            50% { box-shadow: inset 0 0 0 4px rgba(239, 68, 68, 0.8); background-color: rgba(239, 68, 68, 0.25); }
+            80% { box-shadow: inset 0 0 0 4px rgba(239, 68, 68, 0.4); background-color: rgba(239, 68, 68, 0.1); opacity: 1; }
+            100% { box-shadow: none; background-color: transparent; opacity: 0; }
+        }
+        
+        /* 使用伪元素承载动画，避免影响子元素布局 */
+        .chess-square.last-move::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            pointer-events: none;
+            z-index: 5;
+            animation: blink-fade-out 3s ease-in-out forwards;
+        }
+
+        .hint-dot {
+            position: absolute; width: 24%; height: 24%;
+            background-color: rgba(34, 197, 94, 0.6);
+            border-radius: 50%; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); z-index: 15;
+            pointer-events: none;
+        }
+        .hint-capture {
+            position: absolute; width: 85%; height: 85%;
+            border: 4px solid rgba(239, 68, 68, 0.5);
+            border-radius: 50%; top: 50%; left: 50%;
+            transform: translate(-50%, -50%); z-index: 15; pointer-events: none;
+        }
+
+        /* 棋子样式 */
+        .chess-piece {
+            /* 使用 Flex 居中，不再依赖宽高撑满，防止偏移 */
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            cursor: pointer; 
+            z-index: 20;
+            background: transparent !important;
+            user-select: none;
+            font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            /* 字体大小微调，保留震撼感但留出边距 */
+            font-size: clamp(2.2rem, 9vmin, 4.8rem);
+            line-height: 1; /* 关键：消除字体自带行高导致的垂直偏移 */
+            width: 100%; 
+            height: 100%;
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        
+        .chess-piece.white-side {
+            color: #f8fafc;
+            text-shadow: 0px 2px 0px #94a3b8, 0 4px 8px rgba(0,0,0,0.4);
+            filter: drop-shadow(0 0 1px rgba(0,0,0,0.5));
+        }
+        
+        .chess-piece.black-side {
+            color: #1e293b;
+            text-shadow: 0px 2px 0px #000000, 0 4px 8px rgba(0,0,0,0.5);
+        }
+
+        /* 尼克专属橙色棋子 */
+        .chess-piece.orange-side {
+            color: #fb923c; 
+            text-shadow: 0px 2px 0px #9a3412, 0 4px 8px rgba(0,0,0,0.4); 
+            filter: drop-shadow(0 0 1px rgba(0,0,0,0.5));
+        }
+
+        .chess-piece:active { transform: scale(1.15) translateY(-5px); }
+
+        /* 王 (Emoji) 特殊修正 */
+        .chess-emoji-king {
+            font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
+            /* 稍微减小 Emoji 尺寸以防贴边 */
+            font-size: clamp(2.4rem, 9.5vmin, 5rem); 
+            filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+            line-height: 1;
+            /* 有些 Emoji 字体本身重心偏高，增加一点顶部内边距来视觉居中 */
+            padding-top: 5%; 
+        }
+
+        /* 升变选项 */
+        .promo-option {
+            font-size: 3rem;
+            transition: transform 0.1s;
+        }
+        .promo-option:active { transform: scale(0.9); }
 
         .hidden { display: none !important; }
-
-        /* 弹窗动画 */
-        @keyframes popIn {
-            0% { transform: scale(0.9); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        .modal-content {
-            animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-
+        @keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .modal-content { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .safe-area-top { padding-top: env(safe-area-inset-top); }
         .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom); }
     </style>
@@ -264,11 +269,20 @@
             <div class="space-y-3">
                 <label class="block text-slate-300 font-bold text-sm uppercase tracking-wide">对战模式</label>
                 <div class="flex space-x-4">
-                    <button id="mode-pve" onclick="selectMode('pve')" class="flex-1 py-4 rounded-xl border border-teal-500 bg-teal-500/20 text-teal-300 font-bold transition-all">
-                        人机 (🐰vs🤖)
+                    <button id="mode-pve" onclick="selectMode('pve')" class="flex-1 py-4 rounded-xl border border-teal-500 bg-teal-500/20 text-teal-300 font-bold transition-all">人机 (AI)</button>
+                    <button id="mode-pvp" onclick="selectMode('pvp')" class="flex-1 py-4 rounded-xl border border-slate-600 bg-slate-700/30 text-slate-400 font-bold transition-all">双人 (2P)</button>
+                </div>
+            </div>
+
+            <!-- 角色选择 (仅 PVE 显示) -->
+            <div id="char-selector" class="space-y-3">
+                <label class="block text-slate-300 font-bold text-sm uppercase tracking-wide">选择你的角色</label>
+                <div class="flex space-x-4">
+                    <button id="char-judy" onclick="selectChar('judy')" class="flex-1 py-3 rounded-xl border border-teal-500 bg-teal-500/20 text-white font-bold transition-all flex items-center justify-center gap-2">
+                        <span class="text-2xl">🐰</span> 朱迪
                     </button>
-                    <button id="mode-pvp" onclick="selectMode('pvp')" class="flex-1 py-4 rounded-xl border border-slate-600 bg-slate-700/30 text-slate-400 font-bold transition-all">
-                        双人 (🐰vs🦊)
+                    <button id="char-nick" onclick="selectChar('nick')" class="flex-1 py-3 rounded-xl border border-slate-600 bg-slate-700/30 text-slate-400 font-bold transition-all flex items-center justify-center gap-2">
+                        <span class="text-2xl">🦊</span> 尼克
                     </button>
                 </div>
             </div>
@@ -281,7 +295,7 @@
                     <option value="hard">困难 (局长)</option>
                 </select>
             </div>
-
+            
             <div class="pt-6 flex space-x-4">
                 <button onclick="goBack('main')" class="flex-1 py-3 rounded-xl bg-slate-700 text-slate-300 font-bold">返回</button>
                 <button onclick="startDicePhase()" class="flex-1 py-3 rounded-xl bg-gradient-to-r from-cyan-500 to-blue-500 text-white font-bold shadow-lg shadow-cyan-500/20">开始游戏</button>
@@ -295,12 +309,12 @@
             <h3 class="text-xl font-bold text-white">掷骰子定先手</h3>
             <div class="flex justify-around items-center">
                 <div class="text-center">
-                    <div class="text-4xl mb-2">🐰</div>
+                    <div id="dice-p1-icon-show" class="text-4xl mb-2">🐰</div>
                     <div id="dice-p1" class="text-3xl font-mono font-bold text-teal-400">-</div>
                 </div>
                 <div class="text-slate-500 font-bold">VS</div>
                 <div class="text-center">
-                    <div class="text-4xl mb-2" id="dice-p2-icon">🤖</div>
+                    <div id="dice-p2-icon-show" class="text-4xl mb-2">🤖</div>
                     <div id="dice-p2" class="text-3xl font-mono font-bold text-rose-400">-</div>
                 </div>
             </div>
@@ -308,29 +322,35 @@
             <button id="roll-btn" onclick="rollDiceAnim()" class="w-full py-3 bg-indigo-600 text-white rounded-xl font-bold shadow-lg">掷骰子</button>
         </div>
     </div>
+    
+    <!-- 升变弹窗 -->
+    <div id="promotion-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+        <div class="modal-content glass-panel p-6 w-80 text-center space-y-4">
+            <h3 class="text-xl font-bold text-white">兵升变</h3>
+            <p class="text-slate-300 text-sm">选择你的新棋子</p>
+            <div class="grid grid-cols-2 gap-4" id="promo-options">
+                <!-- 选项将通过 JS 生成 -->
+            </div>
+        </div>
+    </div>
 
     <!-- 游戏主界面 -->
     <div id="game-screen" class="hidden w-full h-full flex flex-col items-center relative">
-        <!-- 顶部信息栏 -->
         <div class="w-full flex justify-between items-center px-4 py-3 glass-panel rounded-none border-t-0 border-x-0 z-20 shrink-0">
             <button onclick="confirmExit()" class="text-sm bg-slate-700 hover:bg-red-500/20 hover:text-red-400 px-4 py-2 rounded-lg font-bold text-slate-300 transition-colors">退出</button>
-            
             <div class="flex items-center space-x-6">
-                <!-- P1 Info -->
+                <!-- P1 -->
                 <div id="p1-indicator" class="flex flex-col items-center transition-opacity duration-300 opacity-100">
                     <div class="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center text-xl shadow-lg border-2 border-emerald-400 relative">
-                        🐰
+                        <span id="p1-avatar-game">🐰</span>
                         <div id="p1-turn-dot" class="absolute -bottom-1 -right-1 w-3 h-3 bg-emerald-500 rounded-full hidden"></div>
                     </div>
                 </div>
-                
-                <!-- Score/VS -->
                 <div class="flex flex-col items-center">
                     <div class="text-slate-500 font-black text-xs tracking-widest">VS</div>
                     <div id="timer" class="text-xs text-slate-400 font-mono mt-1">00:00</div>
                 </div>
-                
-                <!-- P2 Info -->
+                <!-- P2 -->
                 <div id="p2-indicator" class="flex flex-col items-center transition-opacity duration-300 opacity-50">
                     <div id="p2-indicator-bg" class="w-10 h-10 rounded-full bg-slate-700 text-white flex items-center justify-center text-xl shadow-lg border-2 border-transparent relative">
                         <span id="p2-avatar-game">🤖</span>
@@ -338,33 +358,19 @@
                     </div>
                 </div>
             </div>
-
             <div class="flex gap-2">
-                <!-- 提示开关 (仅国际象棋显示) -->
-                <button id="hint-toggle-btn" onclick="toggleHints()" class="hidden text-sm bg-slate-700 hover:bg-yellow-500/20 hover:text-yellow-300 px-3 py-2 rounded-lg font-bold text-slate-300 transition-colors">
-                    💡
-                </button>
-                <button onclick="undoMove()" class="text-sm bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded-lg font-bold text-amber-400 transition-colors">
-                    ↩️
-                </button>
-                <button onclick="restartGame()" class="text-sm bg-slate-700 hover:bg-indigo-600/30 hover:text-indigo-300 px-3 py-2 rounded-lg font-bold text-slate-300 transition-colors">
-                    ↻
-                </button>
+                <button id="hint-toggle-btn" onclick="toggleHints()" class="hidden text-sm bg-slate-700 hover:bg-yellow-500/20 hover:text-yellow-300 px-3 py-2 rounded-lg font-bold text-slate-300 transition-colors">💡</button>
+                <button onclick="undoMove()" class="text-sm bg-slate-700 hover:bg-slate-600 px-3 py-2 rounded-lg font-bold text-amber-400 transition-colors">↩️</button>
+                <button onclick="restartGame()" class="text-sm bg-slate-700 hover:bg-indigo-600/30 hover:text-indigo-300 px-3 py-2 rounded-lg font-bold text-slate-300 transition-colors">↻</button>
             </div>
         </div>
 
-        <!-- 游戏区域 (居中, 最大化) -->
         <div class="flex-1 w-full flex items-center justify-center p-1 overflow-hidden">
-            <div id="board-container" class="relative transition-all duration-300">
-                <!-- 棋盘将通过 JS 动态注入 -->
-            </div>
+            <div id="board-container" class="relative transition-all duration-300"></div>
         </div>
 
-        <!-- 底部状态栏 -->
         <div class="w-full p-4 pb-8 text-center glass-panel rounded-none border-b-0 border-x-0 shrink-0">
-            <span id="game-status" class="text-emerald-400 font-bold text-lg animate-pulse">
-                等待开始...
-            </span>
+            <span id="game-status" class="text-emerald-400 font-bold text-lg animate-pulse">等待开始...</span>
         </div>
     </div>
 
@@ -382,66 +388,73 @@
     </div>
 
     <script>
-        /**
-         * 游戏状态管理
-         */
         const state = {
-            gameType: null, // 'gobang' or 'chess'
-            mode: 'pve',    // 'pve' or 'pvp'
-            difficulty: 'medium',
-            currentPlayer: 1, // 1 = P1 (Judy), 2 = P2 (Nick/AI)
-            startPlayer: 1,   // Determined by dice
-            board: [],
-            history: [], // For Undo
-            gameOver: false,
-            aiThinking: false,
-            timer: 0,
-            timerInterval: null,
-            showHints: false, // Chess hints toggle
-            lastMove: null // Record last move {fx, fy, tx, ty} or {x, y}
+            gameType: null, mode: 'pve', difficulty: 'medium', userChar: 'judy',
+            currentPlayer: 1, startPlayer: 1, board: [], history: [],
+            gameOver: false, aiThinking: false, timer: 0, timerInterval: null,
+            showHints: false, lastMove: null, lastMoveTime: 0, pendingPromotion: null 
         };
-
-        const config = {
-            gobangSize: 15,
-            icons: {
-                p1: '🐰',
-                p2_human: '🦊',
-                p2_ai: '🤖'
-            }
+        const config = { 
+            gobangSize: 15, 
+            icons: { 
+                judy: '🐰', 
+                nick: '🦊', 
+                robot: '🤖' 
+            } 
         };
-
-        // --- 核心逻辑 ---
 
         function setupGame(type) {
             state.gameType = type;
-            document.getElementById('main-menu').classList.add('hidden');
-            document.getElementById('setup-screen').classList.remove('hidden');
-            document.getElementById('setup-title').innerText = type === 'gobang' ? '五子棋设置' : '国际象棋设置';
+            const mainMenu = document.getElementById('main-menu');
+            const setupScreen = document.getElementById('setup-screen');
+            const setupTitle = document.getElementById('setup-title');
+            
+            if(mainMenu && setupScreen && setupTitle) {
+                mainMenu.classList.add('hidden');
+                setupScreen.classList.remove('hidden');
+                setupTitle.innerText = type === 'gobang' ? '五子棋设置' : '国际象棋设置';
+                selectMode('pve');
+                selectChar('judy');
+            }
         }
 
         function selectMode(mode) {
             state.mode = mode;
             const btnPve = document.getElementById('mode-pve');
             const btnPvp = document.getElementById('mode-pvp');
-            
+            const charSelector = document.getElementById('char-selector');
+            const diffSelector = document.getElementById('difficulty-selector');
+
             if(mode === 'pve') {
                 btnPve.className = "flex-1 py-4 rounded-xl border border-teal-500 bg-teal-500/20 text-teal-300 font-bold transition-all";
                 btnPvp.className = "flex-1 py-4 rounded-xl border border-slate-600 bg-slate-700/30 text-slate-400 font-bold transition-all";
+                charSelector.classList.remove('hidden');
+                diffSelector.classList.remove('hidden');
             } else {
                 btnPve.className = "flex-1 py-4 rounded-xl border border-slate-600 bg-slate-700/30 text-slate-400 font-bold transition-all";
                 btnPvp.className = "flex-1 py-4 rounded-xl border border-teal-500 bg-teal-500/20 text-teal-300 font-bold transition-all";
+                charSelector.classList.add('hidden');
+                diffSelector.classList.add('hidden');
             }
+        }
 
-            const diffSelector = document.getElementById('difficulty-selector');
-            if(mode === 'pvp') diffSelector.classList.add('hidden');
-            else diffSelector.classList.remove('hidden');
+        function selectChar(char) {
+            state.userChar = char;
+            const btnJudy = document.getElementById('char-judy');
+            const btnNick = document.getElementById('char-nick');
+            
+            if(char === 'judy') {
+                btnJudy.className = "flex-1 py-3 rounded-xl border border-teal-500 bg-teal-500/20 text-white font-bold transition-all flex items-center justify-center gap-2";
+                btnNick.className = "flex-1 py-3 rounded-xl border border-slate-600 bg-slate-700/30 text-slate-400 font-bold transition-all flex items-center justify-center gap-2";
+            } else {
+                btnJudy.className = "flex-1 py-3 rounded-xl border border-slate-600 bg-slate-700/30 text-slate-400 font-bold transition-all flex items-center justify-center gap-2";
+                btnNick.className = "flex-1 py-3 rounded-xl border border-teal-500 bg-teal-500/20 text-white font-bold transition-all flex items-center justify-center gap-2";
+            }
         }
 
         function goBack(target) {
-            if(target === 'main') {
-                document.getElementById('setup-screen').classList.add('hidden');
-                document.getElementById('main-menu').classList.remove('hidden');
-            }
+            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('main-menu').classList.remove('hidden');
         }
 
         function startDicePhase() {
@@ -449,36 +462,34 @@
             document.getElementById('result-modal').classList.add('hidden');
             document.getElementById('setup-screen').classList.add('hidden');
             document.getElementById('game-screen').classList.add('hidden');
-            
-            // Dice UI Reset
             document.getElementById('dice-modal').classList.remove('hidden');
             document.getElementById('roll-btn').classList.remove('hidden');
+            
+            let p1Icon, p2Icon;
+            if(state.mode === 'pve') {
+                p1Icon = state.userChar === 'judy' ? config.icons.judy : config.icons.nick;
+                p2Icon = config.icons.robot;
+            } else {
+                p1Icon = config.icons.judy;
+                p2Icon = config.icons.nick;
+            }
+
+            document.getElementById('dice-p1-icon-show').innerText = p1Icon;
+            document.getElementById('dice-p2-icon-show').innerText = p2Icon;
             document.getElementById('dice-p1').innerText = '-';
             document.getElementById('dice-p2').innerText = '-';
             document.getElementById('dice-msg').innerText = "点数大的先行";
-            
-            const p2Icon = state.mode === 'pve' ? config.icons.p2_ai : config.icons.p2_human;
-            document.getElementById('dice-p2-icon').innerText = p2Icon;
         }
 
         function rollDiceAnim() {
-            const btn = document.getElementById('roll-btn');
-            btn.classList.add('hidden');
-            const elP1 = document.getElementById('dice-p1');
-            const elP2 = document.getElementById('dice-p2');
-            const msg = document.getElementById('dice-msg');
-
-            msg.innerText = "掷骰子中...";
-            
+            document.getElementById('roll-btn').classList.add('hidden');
+            document.getElementById('dice-msg').innerText = "掷骰子中...";
             let rolls = 0;
             const interval = setInterval(() => {
-                elP1.innerText = Math.floor(Math.random()*6)+1;
-                elP2.innerText = Math.floor(Math.random()*6)+1;
+                document.getElementById('dice-p1').innerText = Math.floor(Math.random()*6)+1;
+                document.getElementById('dice-p2').innerText = Math.floor(Math.random()*6)+1;
                 rolls++;
-                if(rolls > 10) {
-                    clearInterval(interval);
-                    finalizeDice();
-                }
+                if(rolls > 10) { clearInterval(interval); finalizeDice(); }
             }, 100);
         }
 
@@ -486,17 +497,19 @@
             let d1 = Math.floor(Math.random()*6)+1;
             let d2 = Math.floor(Math.random()*6)+1;
             while(d1 === d2) { d2 = Math.floor(Math.random()*6)+1; }
-
             document.getElementById('dice-p1').innerText = d1;
             document.getElementById('dice-p2').innerText = d2;
-
-            const winner = d1 > d2 ? 1 : 2;
-            const p2Name = state.mode === 'pve' ? '电脑' : '尼克';
-            const winnerName = winner === 1 ? '朱迪' : p2Name;
-
+            state.startPlayer = d1 > d2 ? 1 : 2;
+            
+            let winnerName = "";
+            if(state.mode === 'pve') {
+                if(state.startPlayer === 1) winnerName = state.userChar === 'judy' ? '朱迪' : '尼克';
+                else winnerName = '电脑';
+            } else {
+                winnerName = state.startPlayer === 1 ? '朱迪' : '尼克';
+            }
+            
             document.getElementById('dice-msg').innerText = `${winnerName} 先手！`;
-            state.startPlayer = winner;
-
             setTimeout(() => {
                 document.getElementById('dice-modal').classList.add('hidden');
                 startGame();
@@ -505,97 +518,66 @@
 
         function startGame() {
             document.getElementById('game-screen').classList.remove('hidden');
-            const p2Icon = state.mode === 'pve' ? config.icons.p2_ai : config.icons.p2_human;
-            document.getElementById('p2-avatar-game').innerText = p2Icon;
             
-            // Toggle Hints button
-            const hintBtn = document.getElementById('hint-toggle-btn');
-            if(state.gameType === 'chess') {
-                hintBtn.classList.remove('hidden');
+            let p1Icon, p2Icon;
+            if(state.mode === 'pve') {
+                p1Icon = state.userChar === 'judy' ? config.icons.judy : config.icons.nick;
+                p2Icon = config.icons.robot;
             } else {
-                hintBtn.classList.add('hidden');
+                p1Icon = config.icons.judy;
+                p2Icon = config.icons.nick;
             }
+            document.getElementById('p1-avatar-game').innerText = p1Icon;
+            document.getElementById('p2-avatar-game').innerText = p2Icon;
+
+            const hintBtn = document.getElementById('hint-toggle-btn');
+            hintBtn.classList.toggle('hidden', state.gameType !== 'chess');
             state.showHints = false;
             updateHintButton();
-
             initBoard();
         }
 
         function toggleHints() {
             state.showHints = !state.showHints;
             updateHintButton();
-            if(state.gameType === 'chess' && selectedSquare) {
-                renderHints(selectedSquare.x, selectedSquare.y);
-            }
+            if(state.gameType === 'chess' && selectedSquare) renderHints(selectedSquare.x, selectedSquare.y);
         }
-
         function updateHintButton() {
             const btn = document.getElementById('hint-toggle-btn');
-            if(state.showHints) {
-                btn.classList.remove('bg-slate-700', 'text-slate-300');
-                btn.classList.add('bg-yellow-500', 'text-white');
-            } else {
-                btn.classList.remove('bg-yellow-500', 'text-white');
-                btn.classList.add('bg-slate-700', 'text-slate-300');
-            }
+            btn.className = state.showHints ? "text-sm bg-yellow-500 text-white px-3 py-2 rounded-lg font-bold transition-colors" : "text-sm bg-slate-700 hover:bg-yellow-500/20 hover:text-yellow-300 px-3 py-2 rounded-lg font-bold text-slate-300 transition-colors";
         }
-
         function confirmExit() {
             if(state.timerInterval) clearInterval(state.timerInterval);
             document.getElementById('game-screen').classList.add('hidden');
             document.getElementById('result-modal').classList.add('hidden');
-            document.getElementById('setup-screen').classList.add('hidden');
+            document.getElementById('promotion-modal').classList.add('hidden');
             document.getElementById('main-menu').classList.remove('hidden');
-            state.board = [];
-            state.history = [];
             state.gameOver = false;
-            state.lastMove = null;
         }
-
-        function restartGame() {
-            if(confirm("确定要重新开始吗？")) {
-                startDicePhase();
-            }
-        }
-
+        function restartGame() { if(confirm("确定要重新开始吗？")) startDicePhase(); }
         function startTimer() {
             if(state.timerInterval) clearInterval(state.timerInterval);
             state.timer = 0;
             const el = document.getElementById('timer');
             state.timerInterval = setInterval(() => {
                 state.timer++;
-                let m = Math.floor(state.timer / 60).toString().padStart(2, '0');
-                let s = (state.timer % 60).toString().padStart(2, '0');
-                el.innerText = `${m}:${s}`;
+                el.innerText = `${Math.floor(state.timer / 60).toString().padStart(2, '0')}:${(state.timer % 60).toString().padStart(2, '0')}`;
             }, 1000);
         }
-
         function initBoard() {
-            state.gameOver = false;
-            state.currentPlayer = state.startPlayer; 
-            state.aiThinking = false;
-            state.history = []; 
-            state.lastMove = null;
+            state.gameOver = false; state.currentPlayer = state.startPlayer; state.aiThinking = false;
+            state.history = []; state.lastMove = null; state.pendingPromotion = null;
             const container = document.getElementById('board-container');
             container.innerHTML = '';
-            
             startTimer();
-
-            if(state.gameType === 'gobang') initGobang(container);
-            else initChess(container);
-            
+            if(state.gameType === 'gobang') initGobang(container); else initChess(container);
             updateTurnIndicator();
-
             if(state.mode === 'pve' && state.currentPlayer === 2) {
                 state.aiThinking = true;
                 updateTurnIndicator();
-                setTimeout(() => {
-                    if(state.gameType === 'gobang') aiGobangMove();
-                    else aiChessMove();
-                }, 1000);
+                setTimeout(() => { state.gameType === 'gobang' ? aiGobangMove() : aiChessMove(); }, 1000);
             }
         }
-
         function updateTurnIndicator() {
             const p1Ind = document.getElementById('p1-indicator');
             const p2Ind = document.getElementById('p2-indicator');
@@ -603,237 +585,155 @@
             const p2Dot = document.getElementById('p2-turn-dot');
             const status = document.getElementById('game-status');
             const p2Bg = document.getElementById('p2-indicator-bg');
+            
+            let p1Name = state.mode==='pve' ? (state.userChar==='judy'?'朱迪':'尼克') : '朱迪';
+            let p2Name = state.mode==='pve' ? '电脑' : '尼克';
 
             if(state.currentPlayer === 1) {
-                p1Ind.style.opacity = '1';
-                p1Dot.classList.remove('hidden');
-                p2Ind.style.opacity = '0.5';
-                p2Dot.classList.add('hidden');
-                p2Bg.classList.remove('border-emerald-400', 'border-2');
-                p2Bg.classList.add('border-transparent');
-                status.innerText = "轮到朱迪 (🐰) 落子...";
-                status.className = "text-emerald-400 font-bold text-lg animate-pulse";
+                p1Ind.style.opacity = '1'; p1Dot.classList.remove('hidden');
+                p2Ind.style.opacity = '0.5'; p2Dot.classList.add('hidden');
+                p2Bg.classList.remove('border-emerald-400', 'border-2'); p2Bg.classList.add('border-transparent');
+                status.innerText = `轮到 ${p1Name} 落子...`; status.className = "text-emerald-400 font-bold text-lg animate-pulse";
             } else {
-                p1Ind.style.opacity = '0.5';
-                p1Dot.classList.add('hidden');
-                p2Ind.style.opacity = '1';
-                p2Dot.classList.remove('hidden');
-                p2Bg.classList.remove('border-transparent');
-                p2Bg.classList.add('border-emerald-400', 'border-2');
-                const name = state.mode === 'pve' ? '电脑' : '尼克';
-                status.innerText = state.aiThinking ? `${name} 正在思考...` : `轮到 ${name} 落子...`;
+                p1Ind.style.opacity = '0.5'; p1Dot.classList.add('hidden');
+                p2Ind.style.opacity = '1'; p2Dot.classList.remove('hidden');
+                p2Bg.classList.remove('border-transparent'); p2Bg.classList.add('border-emerald-400', 'border-2');
+                status.innerText = state.aiThinking ? `${p2Name} 正在思考...` : `轮到 ${p2Name} 落子...`;
                 status.className = "text-rose-400 font-bold text-lg animate-pulse";
             }
         }
-
         function showWinner(winner) {
             state.gameOver = true;
             if(state.timerInterval) clearInterval(state.timerInterval);
-
             const modal = document.getElementById('result-modal');
-            const icon = document.getElementById('winner-icon');
-            const text = document.getElementById('winner-text');
-            const sub = document.getElementById('winner-sub');
-
             modal.classList.remove('hidden');
-
+            
+            let icon = '', text = '', sub = '';
+            
             if(winner === 1) {
-                icon.innerText = '🐰';
-                text.innerText = '朱迪胜利！';
-                text.className = "text-3xl font-black text-emerald-400";
-                sub.innerText = '这就是兔子的智慧！';
+                if(state.mode === 'pve') {
+                    icon = state.userChar === 'judy' ? config.icons.judy : config.icons.nick;
+                    text = (state.userChar === 'judy' ? '朱迪' : '尼克') + '胜利！';
+                } else {
+                    icon = config.icons.judy;
+                    text = '朱迪胜利！';
+                }
+                sub = '完美的策略！';
+                document.getElementById('winner-text').className = "text-3xl font-black text-emerald-400";
             } else if (winner === 2) {
-                const isAI = state.mode === 'pve';
-                icon.innerText = isAI ? '🤖' : '🦊';
-                text.innerText = isAI ? 'AI 胜利！' : '尼克胜利！';
-                text.className = "text-3xl font-black text-rose-400";
-                sub.innerText = isAI ? '还需要多加练习哦。' : '狡猾的狐狸赢了！';
+                icon = state.mode === 'pve' ? config.icons.robot : config.icons.nick;
+                text = state.mode === 'pve' ? 'AI 胜利！' : '尼克胜利！';
+                sub = state.mode === 'pve' ? '人类还需要进化。' : '狡猾的狐狸赢了！';
+                document.getElementById('winner-text').className = "text-3xl font-black text-rose-400";
             } else {
-                icon.innerText = '🤝';
-                text.innerText = '平局';
-                text.className = "text-3xl font-black text-slate-200";
-                sub.innerText = '旗鼓相当的对手。';
-            }
-        }
-
-        function undoMove() {
-            if(state.gameOver || state.aiThinking || state.history.length === 0) return;
-            
-            let steps = 1;
-            if(state.mode === 'pve') {
-                if(state.currentPlayer === 1 && state.history.length >= 2) steps = 2;
-                else if (state.currentPlayer === 2) return; 
+                icon = '🤝'; text = '平局'; sub = '旗鼓相当的对手。';
+                document.getElementById('winner-text').className = "text-3xl font-black text-slate-200";
             }
 
-            for(let i=0; i<steps; i++) {
-                if(state.history.length === 0) break;
-                const lastState = state.history.pop();
-                restoreBoardState(lastState);
-            }
-            
-            // Clear selection and hints
-            selectedSquare = null;
-            refreshBoardUI();
-            updateTurnIndicator();
+            document.getElementById('winner-icon').innerText = icon;
+            document.getElementById('winner-text').innerText = text;
+            document.getElementById('winner-sub').innerText = sub;
         }
 
-        function saveState() {
-            const boardCopy = JSON.parse(JSON.stringify(state.board));
-            state.history.push({
-                board: boardCopy,
-                player: state.currentPlayer,
-                lastMove: state.lastMove ? {...state.lastMove} : null
-            });
-        }
-
-        function restoreBoardState(saved) {
-            state.board = saved.board;
-            state.currentPlayer = saved.player;
-            state.lastMove = saved.lastMove;
-        }
-
-        function refreshBoardUI() {
-            const container = document.getElementById('board-container');
-            if(state.gameType === 'gobang') {
-                // Completely re-render gobang to clear old pieces
-                container.innerHTML = '';
-                initGobang(container, false); // false = don't reset state
-            } else {
-                renderChessBoard(document.querySelector('.chess-board'));
-            }
-        }
-
-        // --- 五子棋逻辑 ---
-
+        // --- Gobang Logic ---
         function initGobang(container, resetState = true) {
-            if(resetState) {
-                state.board = Array(15).fill().map(() => Array(15).fill(0));
-            }
-            
+            if(resetState) state.board = Array(15).fill().map(() => Array(15).fill(0));
             const boardEl = document.createElement('div');
             boardEl.className = 'gobang-board';
-            
+            const starPoints = ['3,3', '11,3', '7,7', '3,11', '11,11'];
             for(let y=0; y<15; y++) {
                 for(let x=0; x<15; x++) {
                     const cell = document.createElement('div');
                     cell.className = 'gobang-cell';
-                    cell.dataset.x = x;
-                    cell.dataset.y = y;
                     cell.onclick = () => handleGobangClick(x, y);
-                    
-                    // Render existing piece if any (for undo/restore)
-                    if(state.board[y][x] !== 0) {
-                        renderGobangPieceInCell(cell, state.board[y][x], false);
+                    if(starPoints.includes(`${x},${y}`)) {
+                        const star = document.createElement('div');
+                        star.className = 'gobang-star-point';
+                        cell.appendChild(star);
                     }
-                    
+                    if(state.board[y][x] !== 0) renderGobangPieceInCell(cell, state.board[y][x], false);
                     boardEl.appendChild(cell);
                 }
             }
             container.appendChild(boardEl);
         }
-
         function handleGobangClick(x, y) {
             if(state.gameOver || state.board[y][x] !== 0 || state.aiThinking) return;
-            
             saveState();
-
-            placeGobangPiece(x, y, state.currentPlayer);
-
-            if(checkGobangWin(x, y, state.currentPlayer)) {
-                setTimeout(() => showWinner(state.currentPlayer), 300);
-                return;
-            }
-
+            state.board[y][x] = state.currentPlayer;
+            state.lastMove = {x, y};
+            state.lastMoveTime = Date.now();
+            renderGobangPieceInCell(document.querySelectorAll('.gobang-cell')[y*15+x], state.currentPlayer, true);
+            if(checkGobangWin(x, y, state.currentPlayer)) { setTimeout(() => showWinner(state.currentPlayer), 300); return; }
             state.currentPlayer = state.currentPlayer === 1 ? 2 : 1;
             updateTurnIndicator();
-
             if(state.mode === 'pve' && state.currentPlayer === 2) {
-                state.aiThinking = true;
-                updateTurnIndicator();
-                setTimeout(aiGobangMove, 500);
+                state.aiThinking = true; updateTurnIndicator(); setTimeout(aiGobangMove, 500);
             }
         }
-
-        function placeGobangPiece(x, y, player) {
-            state.board[y][x] = player;
-            state.lastMove = {x, y};
-            const cells = document.querySelectorAll('.gobang-cell');
-            const cell = cells[y * 15 + x];
-            renderGobangPieceInCell(cell, player, true);
-        }
-
         function renderGobangPieceInCell(cell, player, animate) {
-            const piece = document.createElement('div');
-            piece.className = player === 1 ? 'gobang-piece piece-white' : 'gobang-piece piece-black';
-            piece.innerText = player === 1 ? config.icons.p1 : (state.mode === 'pve' ? config.icons.p2_ai : config.icons.p2_human);
+            // Determine class based on player and settings
+            let cls = '';
+            let icon = '';
             
-            // Remove previous last move markers
+            if(player === 1) { // Player 1
+                if(state.mode === 'pve' && state.userChar === 'nick') {
+                    cls = 'gb-orange'; icon = config.icons.nick;
+                } else {
+                    cls = 'gb-white'; icon = config.icons.judy;
+                }
+            } else { // Player 2
+                if(state.mode === 'pve') {
+                    cls = 'gb-black'; icon = config.icons.robot;
+                } else {
+                    // PvP Player 2 is Nick
+                    cls = 'gb-orange'; icon = config.icons.nick;
+                }
+            }
+
+            const piece = document.createElement('div');
+            piece.className = `gobang-piece ${cls} last-move-marker`;
+            piece.innerText = icon;
+
             document.querySelectorAll('.last-move-marker').forEach(el => el.classList.remove('last-move-marker'));
             piece.classList.add('last-move-marker');
-
-            if(animate) {
-                piece.style.transform = 'scale(0)';
-                cell.appendChild(piece);
-                setTimeout(() => piece.style.transform = 'scale(1)', 50);
-            } else {
-                cell.appendChild(piece);
-            }
+            if(animate) { piece.style.transform = 'scale(0)'; cell.appendChild(piece); setTimeout(() => piece.style.transform = 'scale(1)', 50); }
+            else cell.appendChild(piece);
         }
-
         function checkGobangWin(x, y, player) {
             const dirs = [[1,0], [0,1], [1,1], [1,-1]];
             for(let d of dirs) {
                 let count = 1;
-                for(let i=1; i<5; i++) {
-                    let nx = x + d[0]*i, ny = y + d[1]*i;
-                    if(nx>=0 && nx<15 && ny>=0 && ny<15 && state.board[ny][nx] === player) count++;
-                    else break;
-                }
-                for(let i=1; i<5; i++) {
-                    let nx = x - d[0]*i, ny = y - d[1]*i;
-                    if(nx>=0 && nx<15 && ny>=0 && ny<15 && state.board[ny][nx] === player) count++;
-                    else break;
-                }
+                for(let i=1; i<5; i++) { let nx=x+d[0]*i, ny=y+d[1]*i; if(nx>=0&&nx<15&&ny>=0&&ny<15&&state.board[ny][nx]===player) count++; else break; }
+                for(let i=1; i<5; i++) { let nx=x-d[0]*i, ny=y-d[1]*i; if(nx>=0&&nx<15&&ny>=0&&ny<15&&state.board[ny][nx]===player) count++; else break; }
                 if(count >= 5) return true;
             }
             return false;
         }
-
-        // --- 五子棋 AI ---
         function aiGobangMove() {
             saveState();
             let bestMove = null;
-            let depth = state.difficulty === 'easy' ? 0 : (state.difficulty === 'medium' ? 1 : 2);
-            
             if(state.difficulty === 'easy' && Math.random() < 0.3) {
-                const empties = [];
-                for(let y=0; y<15; y++) for(let x=0; x<15; x++) if(state.board[y][x]===0) empties.push({x,y});
+                const empties = []; for(let y=0; y<15; y++) for(let x=0; x<15; x++) if(state.board[y][x]===0) empties.push({x,y});
                 bestMove = empties[Math.floor(Math.random() * empties.length)];
-            } else {
-                bestMove = getBestMoveGobang(state.board, 2, depth);
-            }
-
-            placeGobangPiece(bestMove.x, bestMove.y, 2);
-            if(checkGobangWin(bestMove.x, bestMove.y, 2)) {
-                setTimeout(() => showWinner(2), 300);
-            } else {
-                state.currentPlayer = 1;
-                state.aiThinking = false;
-                updateTurnIndicator();
-            }
+            } else bestMove = getBestMoveGobang(state.board, 2);
+            state.board[bestMove.y][bestMove.x] = 2;
+            state.lastMove = bestMove;
+            state.lastMoveTime = Date.now();
+            renderGobangPieceInCell(document.querySelectorAll('.gobang-cell')[bestMove.y*15+bestMove.x], 2, true);
+            if(checkGobangWin(bestMove.x, bestMove.y, 2)) { setTimeout(() => showWinner(2), 300); }
+            else { state.currentPlayer = 1; state.aiThinking = false; updateTurnIndicator(); }
         }
-
-        function getBestMoveGobang(board, player, depth) {
+        function getBestMoveGobang(board, player) {
             let candidates = [];
             for(let y=0; y<15; y++) {
                 for(let x=0; x<15; x++) {
                     if(board[y][x] !== 0) continue;
-                    if(hasNeighbor(board, x, y)) {
-                        let score = evaluatePoint(board, x, y, player); 
-                        let enemyScore = evaluatePoint(board, x, y, player===1?2:1);
-                        let totalScore = score + enemyScore * 0.9; 
-                        if (state.difficulty === 'hard') totalScore = score + enemyScore * 1.1;
-                        candidates.push({x, y, score: totalScore});
+                    let hasNeighbor = false;
+                    for(let dy=-1; dy<=1; dy++) for(let dx=-1; dx<=1; dx++) { if(dx||dy) { let nx=x+dx,ny=y+dy; if(nx>=0&&nx<15&&ny>=0&&ny<15&&board[ny][nx]!==0) hasNeighbor=true; } }
+                    if(hasNeighbor || (x===7&&y===7)) {
+                        let score = evaluateGobang(board, x, y, player) + evaluateGobang(board, x, y, player===1?2:1) * (state.difficulty === 'hard' ? 1.1 : 0.9);
+                        candidates.push({x, y, score});
                     }
                 }
             }
@@ -841,63 +741,27 @@
             candidates.sort((a,b) => b.score - a.score);
             return candidates[0];
         }
-
-        function hasNeighbor(board, x, y) {
-            for(let dy=-1; dy<=1; dy++) {
-                for(let dx=-1; dx<=1; dx++) {
-                    if(dy===0 && dx===0) continue;
-                    let nx=x+dx, ny=y+dy;
-                    if(nx>=0 && nx<15 && ny>=0 && ny<15 && board[ny][nx] !== 0) return true;
-                }
-            }
-            return false;
-        }
-
-        function evaluatePoint(board, x, y, player) {
-            let totalScore = 0;
-            const dirs = [[1,0], [0,1], [1,1], [1,-1]];
-            board[y][x] = player;
-            for(let d of dirs) {
-                let line = [];
+        function evaluateGobang(board, x, y, player) {
+            let total = 0; board[y][x] = player;
+            const lines = [[1,0],[0,1],[1,1],[1,-1]];
+            for(let d of lines) {
+                let s = '';
                 for(let i=-4; i<=4; i++) {
-                    let nx = x + d[0]*i, ny = y + d[1]*i;
-                    if(nx>=0 && nx<15 && ny>=0 && ny<15) line.push(board[ny][nx]);
-                    else line.push(-1);
+                    let nx=x+d[0]*i, ny=y+d[1]*i;
+                    s += (nx>=0&&nx<15&&ny>=0&&ny<15) ? (board[ny][nx]===player?'P':(board[ny][nx]===0?'_':'O')) : 'O';
                 }
-                totalScore += evaluateLine(line, player);
+                if(s.includes('PPPPP')) total += 100000;
+                else if(s.includes('_PPPP_')) total += 10000;
+                else if(s.includes('PPPP_')||s.includes('_PPPP')) total += 2500;
+                else if(s.includes('_PPP_')) total += 3000;
+                else if(s.includes('PPP_')||s.includes('_PPP')) total += 500;
+                else if(s.includes('_PP_')) total += 200;
             }
-            board[y][x] = 0;
-            return totalScore;
+            board[y][x] = 0; return total;
         }
 
-        function evaluateLine(line, p) {
-            const s = line.map(v => v===p ? 'P' : (v===0 ? '_' : 'O')).join('');
-            let score = 0;
-            if(s.includes('PPPPP')) score += 100000;
-            else if(s.includes('_PPPP_')) score += 10000;
-            else if(s.includes('PPPP_') || s.includes('_PPPP')) score += 2500;
-            else if(s.includes('_PPP_')) score += 3000;
-            else if(s.includes('PPP_') || s.includes('_PPP')) score += 500;
-            else if(s.includes('_PP_')) score += 200;
-            return score;
-        }
-
-        // --- 国际象棋逻辑 ---
-        const CHESS_SYMBOLS = {
-            1: '♟', 2: '♜', 3: '♞', 4: '♝', 5: '♛', 6: '♚',
-            [-1]: '♟', [-2]: '♜', [-3]: '♞', [-4]: '♝', [-5]: '♛', [-6]: '♚'
-        };
-        const INITIAL_CHESS = [
-            [-2,-3,-4,-5,-6,-4,-3,-2],
-            [-1,-1,-1,-1,-1,-1,-1,-1],
-            [0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],
-            [0,0,0,0,0,0,0,0],
-            [1,1,1,1,1,1,1,1],
-            [2,3,4,5,6,4,3,2]
-        ];
-
+        // --- Chess Logic ---
+        const INITIAL_CHESS = [[-2,-3,-4,-5,-6,-4,-3,-2],[-1,-1,-1,-1,-1,-1,-1,-1],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[0,0,0,0,0,0,0,0],[1,1,1,1,1,1,1,1],[2,3,4,5,6,4,3,2]];
         let selectedSquare = null;
 
         function initChess(container) {
@@ -909,110 +773,76 @@
             container.appendChild(boardEl);
         }
 
+        function getChessPieceChar(type) {
+            const map = { 1: '♟\uFE0E', 2: '♜\uFE0E', 3: '♞\uFE0E', 4: '♝\uFE0E', 5: '♛\uFE0E', 6: '♚\uFE0E' };
+            return map[type];
+        }
+
         function renderChessBoard(boardEl) {
             boardEl.innerHTML = '';
-            for(let y=0; y<8; y++) {
-                for(let x=0; x<8; x++) {
-                    const sq = document.createElement('div');
-                    const isWhite = (x + y) % 2 === 0;
-                    sq.className = `chess-square ${isWhite ? 'white' : 'black'}`;
-                    
-                    // Selected highlight
-                    if(selectedSquare && selectedSquare.x === x && selectedSquare.y === y) {
-                        sq.classList.add('selected');
-                    }
-                    
-                    // Last move highlight
-                    if(state.lastMove && ((state.lastMove.fx === x && state.lastMove.fy === y) || (state.lastMove.tx === x && state.lastMove.ty === y))) {
-                        sq.classList.add('last-move');
-                    }
+            // 计算动画流逝时间
+            const timeElapsed = Date.now() - state.lastMoveTime;
+            const showLastMove = state.lastMove && timeElapsed < 3000;
 
-                    const pieceVal = state.board[y][x];
-                    if(pieceVal !== 0) {
-                        const piece = document.createElement('div');
-                        const isWhiteSide = pieceVal > 0;
-                        piece.className = `chess-piece ${isWhiteSide ? 'white-side' : 'black-side'}`;
-                        if(Math.abs(pieceVal) === 6) {
-                            piece.innerText = isWhiteSide ? '🐰' : (state.mode === 'pve' ? '🤖' : '🦊');
+            for(let y=0; y<8; y++) for(let x=0; x<8; x++) {
+                const sq = document.createElement('div');
+                sq.className = `chess-square ${(x+y)%2===0 ? 'white' : 'black'}`;
+                if(selectedSquare && selectedSquare.x===x && selectedSquare.y===y) sq.classList.add('selected');
+                
+                // Last Move Logic with Timestamp check
+                if(showLastMove && ((state.lastMove.fx===x && state.lastMove.fy===y) || (state.lastMove.tx===x && state.lastMove.ty===y))) {
+                    sq.classList.add('last-move');
+                    // Sync Animation
+                    sq.style.setProperty('--delay', `-${timeElapsed}ms`);
+                    // Use a style block or inline style for negative delay to sync
+                    // Note: In CSS above I didn't add --delay var, let's fix inline style logic or just let it play.
+                    // To strictly sync: animation-delay: -elapsed ms.
+                    // But standard CSS animation restarts on DOM insertion. 
+                    // To visually sync, we must set animation-delay.
+                    // However, simplified approach: if < 3s, just show it.
+                    // To prevent "jump", we can try to compute the opacity manually, OR set negative delay.
+                    // Adding style directly for simplicity
+                    const style = document.createElement('style');
+                    style.innerHTML = `.chess-square.last-move::before { animation-delay: -${timeElapsed}ms; }`;
+                    sq.appendChild(style);
+                }
+                
+                const val = state.board[y][x];
+                if(val !== 0) {
+                    const type = Math.abs(val);
+                    const isWhite = val > 0;
+                    const piece = document.createElement('div');
+                    
+                    let styleClass = '';
+                    let content = '';
+                    let isKing = (type === 6);
+
+                    if(isWhite) { 
+                        if(state.mode === 'pve' && state.userChar === 'nick') {
+                            styleClass = isKing ? 'chess-emoji-king' : 'chess-piece orange-side';
+                            content = isKing ? config.icons.nick : getChessPieceChar(type);
                         } else {
-                            piece.innerText = CHESS_SYMBOLS[pieceVal];
+                            styleClass = isKing ? 'chess-emoji-king' : 'chess-piece white-side';
+                            content = isKing ? config.icons.judy : getChessPieceChar(type);
                         }
-                        sq.appendChild(piece);
+                    } else { 
+                        if(state.mode === 'pve') {
+                            styleClass = isKing ? 'chess-emoji-king' : 'chess-piece black-side';
+                            content = isKing ? config.icons.robot : getChessPieceChar(type);
+                        } else {
+                            styleClass = isKing ? 'chess-emoji-king' : 'chess-piece orange-side';
+                            content = isKing ? config.icons.nick : getChessPieceChar(type);
+                        }
                     }
 
-                    sq.onclick = () => handleChessClick(x, y);
-                    boardEl.appendChild(sq);
+                    piece.className = styleClass;
+                    piece.innerText = content;
+                    sq.appendChild(piece);
                 }
+                sq.onclick = () => handleChessClick(x, y);
+                boardEl.appendChild(sq);
             }
-            
-            // Re-render hints if needed
-            if(selectedSquare && state.showHints) {
-                renderHints(selectedSquare.x, selectedSquare.y);
-            }
-        }
-
-        function renderHints(x, y) {
-            const boardEl = document.querySelector('.chess-board');
-            if(!boardEl) return;
-            
-            // Clear old hints
-            document.querySelectorAll('.hint-dot, .hint-capture').forEach(el => el.remove());
-
-            // Calc moves
-            const moves = [];
-            for(let ty=0; ty<8; ty++) {
-                for(let tx=0; tx<8; tx++) {
-                    if(isValidMove(x, y, tx, ty, state.board)) {
-                        moves.push({tx, ty});
-                    }
-                }
-            }
-
-            moves.forEach(m => {
-                const targetIndex = m.ty * 8 + m.tx;
-                const targetSq = boardEl.children[targetIndex];
-                
-                const hint = document.createElement('div');
-                const isCapture = state.board[m.ty][m.tx] !== 0;
-                hint.className = isCapture ? 'hint-capture' : 'hint-dot';
-                
-                targetSq.appendChild(hint);
-            });
-        }
-
-        function handleChessClick(x, y) {
-            if(state.gameOver || state.aiThinking) return;
-
-            const clickedVal = state.board[y][x];
-            const isOwnPiece = state.currentPlayer === 1 ? clickedVal > 0 : clickedVal < 0;
-
-            if(isOwnPiece) {
-                selectedSquare = {x, y};
-                refreshChessUI();
-            } else if (selectedSquare) {
-                if(isValidMove(selectedSquare.x, selectedSquare.y, x, y, state.board)) {
-                    saveState();
-                    state.lastMove = {fx: selectedSquare.x, fy: selectedSquare.y, tx: x, ty: y};
-                    
-                    makeChessMove(selectedSquare.x, selectedSquare.y, x, y);
-                    selectedSquare = null;
-                    refreshChessUI();
-                    
-                    if(!hasKing(state.board, state.currentPlayer === 1 ? 2 : 1)) {
-                         showWinner(state.currentPlayer);
-                         return;
-                    }
-
-                    state.currentPlayer = state.currentPlayer === 1 ? 2 : 1;
-                    updateTurnIndicator();
-
-                    if(state.mode === 'pve' && state.currentPlayer === 2) {
-                        state.aiThinking = true;
-                        updateTurnIndicator();
-                        setTimeout(aiChessMove, 500);
-                    }
-                }
-            }
+            if(selectedSquare && state.showHints) renderHints(selectedSquare.x, selectedSquare.y);
         }
 
         function refreshChessUI() {
@@ -1020,153 +850,193 @@
             if(boardEl) renderChessBoard(boardEl);
         }
 
-        function makeChessMove(fx, fy, tx, ty) {
-            state.board[ty][tx] = state.board[fy][fx];
-            state.board[fy][fx] = 0;
-            // Promotion
-            if(state.board[ty][tx] === 1 && ty === 0) state.board[ty][tx] = 5;
-            if(state.board[ty][tx] === -1 && ty === 7) state.board[ty][tx] = -5;
+        function renderHints(x, y) {
+            const boardEl = document.querySelector('.chess-board');
+            for(let ty=0; ty<8; ty++) for(let tx=0; tx<8; tx++) {
+                if(isValidMove(x, y, tx, ty, state.board)) {
+                    const hint = document.createElement('div');
+                    hint.className = state.board[ty][tx] !== 0 ? 'hint-capture' : 'hint-dot';
+                    boardEl.children[ty*8+tx].appendChild(hint);
+                }
+            }
         }
 
-        function hasKing(board, player) {
-            const target = player === 1 ? 6 : -6;
-            for(let r of board) if(r.includes(target)) return true;
-            return false;
+        function handleChessClick(x, y) {
+            if(state.gameOver || state.aiThinking || state.pendingPromotion) return;
+            const val = state.board[y][x];
+            const isOwn = state.currentPlayer === 1 ? val > 0 : val < 0;
+            if(isOwn) { selectedSquare = {x, y}; refreshChessUI(); }
+            else if(selectedSquare && isValidMove(selectedSquare.x, selectedSquare.y, x, y, state.board)) {
+                if(Math.abs(state.board[selectedSquare.y][selectedSquare.x]) === 1 && (y === 0 || y === 7)) {
+                    state.pendingPromotion = {fx: selectedSquare.x, fy: selectedSquare.y, tx: x, ty: y};
+                    showPromotionModal(state.currentPlayer);
+                } else {
+                    executeChessMove(selectedSquare.x, selectedSquare.y, x, y);
+                }
+            }
+        }
+
+        function showPromotionModal(player) {
+            const modal = document.getElementById('promotion-modal');
+            const options = document.getElementById('promo-options');
+            modal.classList.remove('hidden');
+            options.innerHTML = '';
+            const pieces = [5, 2, 3, 4];
+            const names = ['后', '车', '马', '象'];
+            
+            let colorClass = '';
+            if(player === 1) {
+                colorClass = (state.mode==='pve' && state.userChar==='nick') ? 'text-orange-500 drop-shadow-md' : 'text-white drop-shadow-md';
+            } else {
+                colorClass = (state.mode==='pve') ? 'text-slate-900 drop-shadow-md' : 'text-orange-500 drop-shadow-md';
+            }
+
+            pieces.forEach((p, i) => {
+                const btn = document.createElement('button');
+                btn.className = "p-4 glass-panel hover:bg-white/20 rounded-xl flex flex-col items-center justify-center promo-option";
+                const char = getChessPieceChar(p);
+                btn.innerHTML = `<span class="${colorClass}">${char}</span><span class="text-white font-bold text-sm mt-2">${names[i]}</span>`;
+                btn.onclick = () => completePromotion(p);
+                options.appendChild(btn);
+            });
+        }
+
+        function completePromotion(type) {
+            const m = state.pendingPromotion;
+            saveState();
+            state.board[m.ty][m.tx] = state.currentPlayer === 1 ? type : -type;
+            state.board[m.fy][m.fx] = 0;
+            state.lastMove = m;
+            state.lastMoveTime = Date.now();
+            state.pendingPromotion = null;
+            document.getElementById('promotion-modal').classList.add('hidden');
+            finishChessTurn();
+        }
+
+        function executeChessMove(fx, fy, tx, ty) {
+            saveState();
+            state.board[ty][tx] = state.board[fy][fx];
+            state.board[fy][fx] = 0;
+            state.lastMove = {fx, fy, tx, ty};
+            state.lastMoveTime = Date.now();
+            finishChessTurn();
+        }
+
+        function finishChessTurn() {
+            selectedSquare = null;
+            refreshChessUI();
+            if(!hasKing(state.board, state.currentPlayer === 1 ? 2 : 1)) { showWinner(state.currentPlayer); return; }
+            state.currentPlayer = state.currentPlayer === 1 ? 2 : 1;
+            updateTurnIndicator();
+            if(state.mode === 'pve' && state.currentPlayer === 2) {
+                state.aiThinking = true; updateTurnIndicator(); setTimeout(aiChessMove, 500);
+            }
         }
 
         function isValidMove(fx, fy, tx, ty, board) {
-            const p = board[fy][fx];
-            const target = board[ty][tx];
-            const type = Math.abs(p);
-            const dx = tx - fx;
-            const dy = ty - fy;
-            const adx = Math.abs(dx);
-            const ady = Math.abs(dy);
-            
+            const p = board[fy][fx], target = board[ty][tx], type = Math.abs(p);
+            const dx = tx-fx, dy = ty-fy, adx = Math.abs(dx), ady = Math.abs(dy);
             if(target !== 0 && ((p>0 && target>0) || (p<0 && target<0))) return false;
-
-            // 1. Pawn
-            if(type === 1) {
+            if(type === 1) { // Pawn
                 const dir = p > 0 ? -1 : 1;
-                const startRow = p > 0 ? 6 : 1;
                 if(dx === 0 && target === 0) {
                     if(dy === dir) return true;
-                    if(fy === startRow && dy === 2*dir && board[fy+dir][fx] === 0) return true;
+                    if(fy === (p>0?6:1) && dy === 2*dir && board[fy+dir][fx] === 0) return true;
                 }
                 if(adx === 1 && dy === dir && target !== 0) return true;
                 return false;
             }
-            // 2. Rook
-            if(type === 2) {
-                if(dx !== 0 && dy !== 0) return false;
-                return isPathClear(fx, fy, tx, ty, board);
-            }
-            // 3. Knight
-            if(type === 3) return (adx === 1 && ady === 2) || (adx === 2 && ady === 1);
-            // 4. Bishop
-            if(type === 4) {
-                if(adx !== ady) return false;
-                return isPathClear(fx, fy, tx, ty, board);
-            }
-            // 5. Queen
-            if(type === 5) {
-                if(dx !== 0 && dy !== 0 && adx !== ady) return false;
-                return isPathClear(fx, fy, tx, ty, board);
-            }
-            // 6. King
-            if(type === 6) return adx <= 1 && ady <= 1;
+            if(type === 2) return (dx===0 || dy===0) && isPathClear(fx, fy, tx, ty, board);
+            if(type === 3) return (adx===1 && ady===2) || (adx===2 && ady===1);
+            if(type === 4) return (adx===ady) && isPathClear(fx, fy, tx, ty, board);
+            if(type === 5) return (dx===0 || dy===0 || adx===ady) && isPathClear(fx, fy, tx, ty, board);
+            if(type === 6) return adx<=1 && ady<=1;
+            return false;
+        }
+        function isPathClear(fx, fy, tx, ty, board) {
+            const sx = Math.sign(tx-fx), sy = Math.sign(ty-fy);
+            let x = fx+sx, y = fy+sy;
+            while(x !== tx || y !== ty) { if(board[y][x] !== 0) return false; x+=sx; y+=sy; }
+            return true;
+        }
+        function hasKing(board, player) {
+            const k = player===1?6:-6;
+            for(let r of board) if(r.includes(k)) return true;
             return false;
         }
 
-        function isPathClear(fx, fy, tx, ty, board) {
-            const dx = Math.sign(tx - fx);
-            const dy = Math.sign(ty - fy);
-            let x = fx + dx;
-            let y = fy + dy;
-            while(x !== tx || y !== ty) {
-                if(board[y][x] !== 0) return false;
-                x += dx;
-                y += dy;
-            }
-            return true;
-        }
-
-        // --- 国际象棋 AI ---
+        // --- Chess AI ---
         function aiChessMove() {
-            saveState();
+            // Check for AI promotion
             const moves = [];
-            for(let y=0; y<8; y++) {
-                for(let x=0; x<8; x++) {
-                    if(state.board[y][x] < 0) { // AI is Black
-                        for(let ty=0; ty<8; ty++) {
-                            for(let tx=0; tx<8; tx++) {
-                                if(isValidMove(x, y, tx, ty, state.board)) {
-                                    moves.push({fx:x, fy:y, tx:tx, ty:ty});
-                                }
-                            }
-                        }
-                    }
-                }
+            for(let y=0; y<8; y++) for(let x=0; x<8; x++) if(state.board[y][x] < 0) {
+                for(let ty=0; ty<8; ty++) for(let tx=0; tx<8; tx++) if(isValidMove(x, y, tx, ty, state.board)) moves.push({fx:x, fy:y, tx:tx, ty:ty});
             }
-
-            if(moves.length === 0) {
-                state.aiThinking = false;
-                return;
-            }
+            if(moves.length === 0) { state.aiThinking = false; return; }
             
-            let bestMove = moves[0];
-            let bestScore = -9999;
-            moves.sort(() => Math.random() - 0.5);
-
+            let bestMove = moves[0], bestScore = -9999;
             if(state.difficulty === 'easy') {
-                bestMove = moves[0];
+                bestMove = moves[Math.floor(Math.random()*moves.length)];
             } else {
                 for(let m of moves) {
                     let score = 0;
-                    const targetVal = Math.abs(state.board[m.ty][m.tx]);
-                    if(targetVal === 6) score += 1000;
-                    else if(targetVal === 5) score += 90;
-                    else if(targetVal === 2) score += 50;
-                    else if(targetVal === 4 || targetVal === 3) score += 30;
-                    else if(targetVal === 1) score += 10;
-
-                    if(state.difficulty === 'hard') {
-                        if(isSquareUnderAttack(m.tx, m.ty, 1, state.board)) {
-                            score -= Math.abs(state.board[m.fy][m.fx]) * 5;
-                        }
-                    }
-                    if(score > bestScore) {
-                        bestScore = score;
-                        bestMove = m;
-                    }
+                    const target = Math.abs(state.board[m.ty][m.tx]);
+                    if(target===6) score+=1000; else if(target===5) score+=90; else if(target===2) score+=50; else if(target===3||target===4) score+=30; else if(target===1) score+=10;
+                    if(state.difficulty === 'hard' && isSquareUnderAttack(m.tx, m.ty, 1, state.board)) score -= Math.abs(state.board[m.fy][m.fx]) * 5;
+                    if(score > bestScore) { bestScore = score; bestMove = m; }
                 }
             }
-
-            state.lastMove = {fx: bestMove.fx, fy: bestMove.fy, tx: bestMove.tx, ty: bestMove.ty};
-            makeChessMove(bestMove.fx, bestMove.fy, bestMove.tx, bestMove.ty);
-            refreshChessUI();
-
-            if(!hasKing(state.board, 1)) {
-                showWinner(2);
-            } else {
-                state.currentPlayer = 1;
-                state.aiThinking = false;
-                updateTurnIndicator();
-            }
+            
+            // Auto promote for AI
+            const isPromo = Math.abs(state.board[bestMove.fy][bestMove.fx]) === 1 && bestMove.ty === 7;
+            executeChessMove(bestMove.fx, bestMove.fy, bestMove.tx, bestMove.ty);
+            if(isPromo) state.board[bestMove.ty][bestMove.tx] = -5; // Always Queen
         }
-
-        function isSquareUnderAttack(tx, ty, attackSide, board) {
-            for(let y=0; y<8; y++) {
-                for(let x=0; x<8; x++) {
-                    const p = board[y][x];
-                    if((attackSide === 1 && p > 0) || (attackSide === 2 && p < 0)) {
-                        if(isValidMove(x, y, tx, ty, board)) return true;
-                    }
+        function isSquareUnderAttack(tx, ty, attacker, board) {
+            for(let y=0; y<8; y++) for(let x=0; x<8; x++) {
+                const p = board[y][x];
+                if((attacker===1 && p>0) || (attacker===2 && p<0)) {
+                    if(isValidMove(x, y, tx, ty, board)) return true;
                 }
             }
             return false;
         }
-
+        
+        // --- 辅助功能 ---
+        function undoMove() {
+            if(state.gameOver || state.aiThinking || state.history.length === 0 || state.pendingPromotion) return;
+            let steps = 1;
+            if(state.mode === 'pve') {
+                if(state.currentPlayer === 1 && state.history.length >= 2) steps = 2; else if (state.currentPlayer === 2) return;
+            }
+            for(let i=0; i<steps; i++) {
+                if(state.history.length === 0) break;
+                const prev = state.history.pop();
+                restoreBoardState(prev);
+                // Also restore timing to avoid re-triggering old animation if we undo
+                state.lastMoveTime = 0; // Reset animation on undo
+            }
+            selectedSquare = null;
+            refreshBoardUI();
+            updateTurnIndicator();
+        }
+        function saveState() {
+            state.history.push({
+                board: JSON.parse(JSON.stringify(state.board)),
+                player: state.currentPlayer,
+                lastMove: state.lastMove ? {...state.lastMove} : null
+            });
+        }
+        function restoreBoardState(saved) {
+            state.board = saved.board;
+            state.currentPlayer = saved.player;
+            state.lastMove = saved.lastMove;
+        }
+        function refreshBoardUI() {
+            const container = document.getElementById('board-container');
+            if(state.gameType === 'gobang') { container.innerHTML = ''; initGobang(container, false); }
+            else renderChessBoard(document.querySelector('.chess-board'));
+        }
     </script>
 </body>
 </html>
