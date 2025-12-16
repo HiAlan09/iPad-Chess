@@ -98,16 +98,8 @@
         .gb-black { background: radial-gradient(circle at 35% 35%, #475569, #0f172a); color: #fff; }
         .gb-orange { background: radial-gradient(circle at 35% 35%, #fb923c, #c2410c); color: #fff; text-shadow: 0 2px 2px rgba(0,0,0,0.3); }
         
-        .last-move-marker::after {
-            content: ''; position: absolute;
-            width: 30%; height: 30%;
-            background: rgba(239, 68, 68, 0.8);
-            border-radius: 50%;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            box-shadow: 0 0 6px rgba(239, 68, 68, 0.6);
-        }
-
+        /* 移除红点样式，现在由头像区分 */
+        
         /* --- 国际象棋样式 --- */
         .chess-board {
             width: min(96vmin, calc(100vh - 200px));
@@ -122,7 +114,6 @@
         }
         .chess-square { 
             position: relative; 
-            /* 锁定网格大小，防止被大尺寸 Emoji 撑开 */
             width: 100%;
             height: 100%;
             overflow: hidden;
@@ -143,7 +134,6 @@
             100% { box-shadow: none; background-color: transparent; opacity: 0; }
         }
         
-        /* 使用伪元素承载动画，避免影响子元素布局 */
         .chess-square.last-move::before {
             content: '';
             position: absolute;
@@ -169,7 +159,6 @@
 
         /* 棋子样式 */
         .chess-piece {
-            /* 使用 Flex 居中，不再依赖宽高撑满，防止偏移 */
             display: flex; 
             align-items: center; 
             justify-content: center;
@@ -178,9 +167,8 @@
             background: transparent !important;
             user-select: none;
             font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            /* 字体大小微调，保留震撼感但留出边距 */
             font-size: clamp(2.2rem, 9vmin, 4.8rem);
-            line-height: 1; /* 关键：消除字体自带行高导致的垂直偏移 */
+            line-height: 1;
             width: 100%; 
             height: 100%;
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -197,7 +185,6 @@
             text-shadow: 0px 2px 0px #000000, 0 4px 8px rgba(0,0,0,0.5);
         }
 
-        /* 尼克专属橙色棋子 */
         .chess-piece.orange-side {
             color: #fb923c; 
             text-shadow: 0px 2px 0px #9a3412, 0 4px 8px rgba(0,0,0,0.4); 
@@ -206,18 +193,14 @@
 
         .chess-piece:active { transform: scale(1.15) translateY(-5px); }
 
-        /* 王 (Emoji) 特殊修正 */
         .chess-emoji-king {
             font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
-            /* 稍微减小 Emoji 尺寸以防贴边 */
             font-size: clamp(2.4rem, 9.5vmin, 5rem); 
             filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
             line-height: 1;
-            /* 有些 Emoji 字体本身重心偏高，增加一点顶部内边距来视觉居中 */
             padding-top: 5%; 
         }
 
-        /* 升变选项 */
         .promo-option {
             font-size: 3rem;
             transition: transform 0.1s;
@@ -274,7 +257,6 @@
                 </div>
             </div>
 
-            <!-- 角色选择 (仅 PVE 显示) -->
             <div id="char-selector" class="space-y-3">
                 <label class="block text-slate-300 font-bold text-sm uppercase tracking-wide">选择你的角色</label>
                 <div class="flex space-x-4">
@@ -392,7 +374,8 @@
             gameType: null, mode: 'pve', difficulty: 'medium', userChar: 'judy',
             currentPlayer: 1, startPlayer: 1, board: [], history: [],
             gameOver: false, aiThinking: false, timer: 0, timerInterval: null,
-            showHints: false, lastMove: null, lastMoveTime: 0, pendingPromotion: null 
+            showHints: false, lastMove: null, lastMoveTime: 0, pendingPromotion: null,
+            winningLine: null // Stores [{x,y},...] of winning gobang pieces
         };
         const config = { 
             gobangSize: 15, 
@@ -494,9 +477,13 @@
         }
 
         function finalizeDice() {
-            let d1 = Math.floor(Math.random()*6)+1;
-            let d2 = Math.floor(Math.random()*6)+1;
-            while(d1 === d2) { d2 = Math.floor(Math.random()*6)+1; }
+            // Updated Logic: ensure distinct numbers using do-while
+            let d1, d2;
+            do {
+                d1 = Math.floor(Math.random() * 6) + 1;
+                d2 = Math.floor(Math.random() * 6) + 1;
+            } while (d1 === d2);
+
             document.getElementById('dice-p1').innerText = d1;
             document.getElementById('dice-p2').innerText = d2;
             state.startPlayer = d1 > d2 ? 1 : 2;
@@ -566,7 +553,7 @@
         }
         function initBoard() {
             state.gameOver = false; state.currentPlayer = state.startPlayer; state.aiThinking = false;
-            state.history = []; state.lastMove = null; state.pendingPromotion = null;
+            state.history = []; state.lastMove = null; state.pendingPromotion = null; state.winningLine = null;
             const container = document.getElementById('board-container');
             container.innerHTML = '';
             startTimer();
@@ -651,7 +638,7 @@
                         star.className = 'gobang-star-point';
                         cell.appendChild(star);
                     }
-                    if(state.board[y][x] !== 0) renderGobangPieceInCell(cell, state.board[y][x], false);
+                    if(state.board[y][x] !== 0) renderGobangPiece(x, y, state.board[y][x], false);
                     boardEl.appendChild(cell);
                 }
             }
@@ -659,58 +646,97 @@
         }
         function handleGobangClick(x, y) {
             if(state.gameOver || state.board[y][x] !== 0 || state.aiThinking) return;
+            const prevMove = state.lastMove;
             saveState();
             state.board[y][x] = state.currentPlayer;
             state.lastMove = {x, y};
             state.lastMoveTime = Date.now();
-            renderGobangPieceInCell(document.querySelectorAll('.gobang-cell')[y*15+x], state.currentPlayer, true);
-            if(checkGobangWin(x, y, state.currentPlayer)) { setTimeout(() => showWinner(state.currentPlayer), 300); return; }
+            
+            // Remove avatar from previous move
+            if(prevMove) renderGobangPiece(prevMove.x, prevMove.y, state.board[prevMove.y][prevMove.x], false);
+            // Render new move with avatar
+            renderGobangPiece(x, y, state.currentPlayer, true);
+
+            if(checkGobangWin(x, y, state.currentPlayer)) { 
+                // Show all winning avatars
+                state.winningLine.forEach(p => renderGobangPiece(p.x, p.y, state.currentPlayer, false));
+                setTimeout(() => showWinner(state.currentPlayer), 1200); 
+                return; 
+            }
             state.currentPlayer = state.currentPlayer === 1 ? 2 : 1;
             updateTurnIndicator();
             if(state.mode === 'pve' && state.currentPlayer === 2) {
                 state.aiThinking = true; updateTurnIndicator(); setTimeout(aiGobangMove, 500);
             }
         }
-        function renderGobangPieceInCell(cell, player, animate) {
-            // Determine class based on player and settings
+        function renderGobangPiece(x, y, player, animate) {
+            // Find cell
+            const cell = document.querySelectorAll('.gobang-cell')[y*15+x];
+            // Remove existing piece if any to prevent duplication
+            const existing = cell.querySelector('.gobang-piece');
+            if(existing) existing.remove();
+
+            // Determine class
             let cls = '';
             let icon = '';
             
             if(player === 1) { // Player 1
                 if(state.mode === 'pve' && state.userChar === 'nick') {
-                    cls = 'gb-orange'; icon = config.icons.nick;
+                    cls = 'gb-orange'; 
+                    icon = config.icons.nick;
                 } else {
-                    cls = 'gb-white'; icon = config.icons.judy;
+                    cls = 'gb-white'; 
+                    icon = config.icons.judy;
                 }
             } else { // Player 2
                 if(state.mode === 'pve') {
-                    cls = 'gb-black'; icon = config.icons.robot;
+                    cls = 'gb-black'; 
+                    icon = config.icons.robot;
                 } else {
-                    // PvP Player 2 is Nick
-                    cls = 'gb-orange'; icon = config.icons.nick;
+                    cls = 'gb-orange'; 
+                    icon = config.icons.nick;
                 }
             }
 
-            const piece = document.createElement('div');
-            piece.className = `gobang-piece ${cls} last-move-marker`;
-            piece.innerText = icon;
+            // Logic: Show avatar ONLY if latest move OR winning piece
+            const isLast = state.lastMove && state.lastMove.x === x && state.lastMove.y === y;
+            const isWin = state.winningLine && state.winningLine.some(p => p.x === x && p.y === y);
+            
+            const showAvatar = isLast || isWin;
 
-            document.querySelectorAll('.last-move-marker').forEach(el => el.classList.remove('last-move-marker'));
-            piece.classList.add('last-move-marker');
+            const piece = document.createElement('div');
+            // Remove last-move-marker class since we use avatar now
+            piece.className = `gobang-piece ${cls}`;
+            piece.innerText = showAvatar ? icon : ''; // Only show icon if relevant
+
             if(animate) { piece.style.transform = 'scale(0)'; cell.appendChild(piece); setTimeout(() => piece.style.transform = 'scale(1)', 50); }
             else cell.appendChild(piece);
         }
         function checkGobangWin(x, y, player) {
             const dirs = [[1,0], [0,1], [1,1], [1,-1]];
             for(let d of dirs) {
-                let count = 1;
-                for(let i=1; i<5; i++) { let nx=x+d[0]*i, ny=y+d[1]*i; if(nx>=0&&nx<15&&ny>=0&&ny<15&&state.board[ny][nx]===player) count++; else break; }
-                for(let i=1; i<5; i++) { let nx=x-d[0]*i, ny=y-d[1]*i; if(nx>=0&&nx<15&&ny>=0&&ny<15&&state.board[ny][nx]===player) count++; else break; }
-                if(count >= 5) return true;
+                let line = [{x, y}];
+                // Forward
+                for(let i=1; i<5; i++) { 
+                    let nx=x+d[0]*i, ny=y+d[1]*i; 
+                    if(nx>=0&&nx<15&&ny>=0&&ny<15&&state.board[ny][nx]===player) line.push({x:nx, y:ny}); 
+                    else break; 
+                }
+                // Backward
+                for(let i=1; i<5; i++) { 
+                    let nx=x-d[0]*i, ny=y-d[1]*i; 
+                    if(nx>=0&&nx<15&&ny>=0&&ny<15&&state.board[ny][nx]===player) line.push({x:nx, y:ny}); 
+                    else break; 
+                }
+                if(line.length >= 5) {
+                    state.winningLine = line;
+                    return true;
+                }
             }
             return false;
         }
         function aiGobangMove() {
+            const prevMove = state.lastMove;
             saveState();
             let bestMove = null;
             if(state.difficulty === 'easy' && Math.random() < 0.3) {
@@ -720,8 +746,16 @@
             state.board[bestMove.y][bestMove.x] = 2;
             state.lastMove = bestMove;
             state.lastMoveTime = Date.now();
-            renderGobangPieceInCell(document.querySelectorAll('.gobang-cell')[bestMove.y*15+bestMove.x], 2, true);
-            if(checkGobangWin(bestMove.x, bestMove.y, 2)) { setTimeout(() => showWinner(2), 300); }
+            
+            // Remove avatar from previous move
+            if(prevMove) renderGobangPiece(prevMove.x, prevMove.y, state.board[prevMove.y][prevMove.x], false);
+            // Render new move with avatar
+            renderGobangPiece(bestMove.x, bestMove.y, 2, true);
+
+            if(checkGobangWin(bestMove.x, bestMove.y, 2)) { 
+                state.winningLine.forEach(p => renderGobangPiece(p.x, p.y, 2, false));
+                setTimeout(() => showWinner(2), 1200); 
+            }
             else { state.currentPlayer = 1; state.aiThinking = false; updateTurnIndicator(); }
         }
         function getBestMoveGobang(board, player) {
@@ -794,13 +828,6 @@
                     sq.classList.add('last-move');
                     // Sync Animation
                     sq.style.setProperty('--delay', `-${timeElapsed}ms`);
-                    // Use a style block or inline style for negative delay to sync
-                    // Note: In CSS above I didn't add --delay var, let's fix inline style logic or just let it play.
-                    // To strictly sync: animation-delay: -elapsed ms.
-                    // But standard CSS animation restarts on DOM insertion. 
-                    // To visually sync, we must set animation-delay.
-                    // However, simplified approach: if < 3s, just show it.
-                    // To prevent "jump", we can try to compute the opacity manually, OR set negative delay.
                     // Adding style directly for simplicity
                     const style = document.createElement('style');
                     style.innerHTML = `.chess-square.last-move::before { animation-delay: -${timeElapsed}ms; }`;
@@ -1015,6 +1042,8 @@
                 restoreBoardState(prev);
                 // Also restore timing to avoid re-triggering old animation if we undo
                 state.lastMoveTime = 0; // Reset animation on undo
+                // Reset winning line on undo
+                state.winningLine = null;
             }
             selectedSquare = null;
             refreshBoardUI();
